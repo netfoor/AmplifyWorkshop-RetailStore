@@ -1,53 +1,47 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { Product } from 'aws-cdk-lib/aws-servicecatalog';
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
-=========================================================================*/
-const schema = a.schema({
-  Todo: a
+// == STEP 1 ===============================================================
+// Define your Data schema. This is the schema for your table.
+const retailStoreSchema = a.schema({
+  Product: a
     .model({
-      content: a.string(),
+      id: a.id().required(),
+      name: a.string().required(),
+      description: a.string(),
+      price: a.float(),
+      current_stock: a.integer(),
+      image: a.string(),
+      rating: a.float(),
+      style: a.string(),
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
-export type Schema = ClientSchema<typeof schema>;
+// You can define authorization rules for your schema. The example above allows
+// public access to the Product model using an API key. You can also define
+// authorization rules for other models in your schema. For example, you can
+// define a model for orders and allow only authenticated users to access it.
+//| Escenario                                          | Modo recomendado          |
+//| -------------------------------------------------- | ------------------------- |
+//| Sitio público de catálogo de productos             | `apiKey` o `identityPool` |
+//| App móvil donde usuarios pueden usar sin login     | `identityPool`            |
+//| Panel de administración con login                  | `userPool`                |
+//| App empresarial con login federado (Google, Azure) | `oidc`                    |
+//| Comunicación entre servicios (Lambda, S3)          | `iam`                     |
 
+
+
+// Step 2: export the schema for use in your frontend code
+export type Schema = ClientSchema<typeof retailStoreSchema>;
+
+// Step 3: export the schema for use in your backend code
 export const data = defineData({
-  schema,
+  schema: retailStoreSchema,
   authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+    defaultAuthorizationMode: 'apiKey',
+    apiKeyAuthorizationMode: {
+      expiresInDays: 7,
+    },
   },
 });
-
-/*== STEP 2 ===============================================================
-Go to your frontend source code. From your client-side code, generate a
-Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
-WORK IN THE FRONTEND CODE FILE.)
-
-Using JavaScript or Next.js React Server Components, Middleware, Server 
-Actions or Pages Router? Review how to generate Data clients for those use
-cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
-=========================================================================*/
-
-/*
-"use client"
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-
-const client = generateClient<Schema>() // use this Data client for CRUDL requests
-*/
-
-/*== STEP 3 ===============================================================
-Fetch records from the database and use them in your frontend component.
-(THIS SNIPPET WILL ONLY WORK IN THE FRONTEND CODE FILE.)
-=========================================================================*/
-
-/* For example, in a React component, you can use this snippet in your
-  function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
-
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>
