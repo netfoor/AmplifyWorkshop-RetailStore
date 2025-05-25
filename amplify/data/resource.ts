@@ -14,6 +14,10 @@ const retailStoreSchema = a.schema({
       image: a.string(),
       rating: a.float(),
       style: a.string(),
+
+      // relationships
+      categoryProductId: a.id(),
+      category: a.belongsTo('Category', 'categoryProductId'),
     })
     .authorization((allow) => [allow.publicApiKey()]),
   Category: a
@@ -23,6 +27,9 @@ const retailStoreSchema = a.schema({
       description: a.string(),
       image: a.string(),
       styles: a.string().array(),
+
+      //relationships
+      products: a.hasMany('Product', 'categoryProductId'),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
