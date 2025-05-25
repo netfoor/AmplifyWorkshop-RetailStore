@@ -19,7 +19,12 @@ const retailStoreSchema = a.schema({
       categoryProductId: a.id(),
       category: a.belongsTo('Category', 'categoryProductId'),
     })
-    .authorization((allow) => [allow.publicApiKey()]),
+    .authorization((allow) => [
+      allow.publicApiKey().to(['read']),
+      allow.owner(),
+      allow.group('Admin'),
+
+    ]),
   Category: a
     .model({
       id: a.id().required(),
@@ -31,7 +36,11 @@ const retailStoreSchema = a.schema({
       //relationships
       products: a.hasMany('Product', 'categoryProductId'),
     })
-    .authorization((allow) => [allow.publicApiKey()]),
+    .authorization((allow) => [
+      allow.publicApiKey(),
+      allow.owner(),
+      allow.group('Admin'),
+    ]),
 });
 
 // You can define authorization rules for your schema. The example above allows
