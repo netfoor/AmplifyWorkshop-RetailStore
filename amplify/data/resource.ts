@@ -1,4 +1,5 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { withResolved } from 'aws-cdk-lib';
 import { Product } from 'aws-cdk-lib/aws-servicecatalog';
 
 // == STEP 1 ===============================================================
@@ -14,10 +15,12 @@ const retailStoreSchema = a.schema({
       image: a.string(),
       rating: a.float(),
       style: a.string(),
+      gender_affinity: a.string(),
+      where_visible: a.string(),
 
       // relationships
-      categoryProductId: a.id(),
-      category: a.belongsTo('Category', 'categoryProductId'),
+      categoryProductsId: a.id(),
+      category: a.belongsTo('Category', 'categoryProductsId'),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(['read']),
@@ -34,7 +37,7 @@ const retailStoreSchema = a.schema({
       styles: a.string().array(),
 
       //relationships
-      products: a.hasMany('Product', 'categoryProductId'),
+      products: a.hasMany('Product', 'categoryProductsId'),
     })
     .authorization((allow) => [
       allow.publicApiKey(),
