@@ -16,6 +16,15 @@ const retailStoreSchema = a.schema({
       style: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  Category: a
+    .model({
+      id: a.id().required(),
+      name: a.string().required(),
+      description: a.string(),
+      image: a.string(),
+      styles: a.string().array(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 // You can define authorization rules for your schema. The example above allows
