@@ -1,7 +1,7 @@
 import type { Schema } from "../../../amplify/data/resource";
 import { generateClient } from 'aws-amplify/api';
 
-const SOURCE_BUCKET_URL = 'd315wq6n2wiwiv.cloudfront.net';
+const SOURCE_BUCKET_URL = 'https://d315wq6n2wiwiv.cloudfront.net';
 
 import categories from "./categories.json";
 import products from "./products.json";
